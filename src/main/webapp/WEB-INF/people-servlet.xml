@@ -1,0 +1,59 @@
+<beans
+	xmlns = "http://www.springframework.org/schema/beans"
+   	xmlns:context = "http://www.springframework.org/schema/context"
+   	xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+   	xmlns:mvc="http://www.springframework.org/schema/mvc"
+   	xmlns:tx="http://www.springframework.org/schema/tx"
+   	xsi:schemaLocation = "
+   		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd     
+   		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+   		http://www.springframework.org/schema/context 
+   		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+   		
+   	<mvc:default-servlet-handler/>
+   	
+	<context:component-scan base-package="com.andreabazerla" />
+
+	<mvc:annotation-driven />
+   				  		
+  	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"></property>
+		<property name="url" value="jdbc:sqlserver://localhost:1433;DatabaseName=People"></property>
+		<property name="username" value="sa"></property>
+		<property name="password" value=""></property>
+	</bean>
+		
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.SQLServer2008Dialect</prop>
+				<prop key="hibernate.hbm2ddl.auto">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.show_sql">update</prop>
+			</props>
+		</property>
+		<property name="packagesToScan">
+			 <array>
+	             <value>com.andreabazerla.model.user</value>
+	             <value>com.andreabazerla.model.person</value>
+	        </array>
+		</property>
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"></bean>
+	
+	<tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager" />
+		
+</beans>
